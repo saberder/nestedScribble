@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"sync"
@@ -128,7 +128,7 @@ func write(dir, tmpPath, dstPath string, v interface{}) error {
 	b = append(b, byte('\n'))
 
 	// write marshaled data to the temp file
-	if err := ioutil.WriteFile(tmpPath, b, 0644); err != nil {
+	if err := os.WriteFile(tmpPath, b, 0644); err != nil {
 		return err
 	}
 
@@ -158,7 +158,7 @@ func (d *Driver) Read(collection, resource string, v interface{}) error {
 
 func read(record string, v interface{}) error {
 
-	b, err := ioutil.ReadFile(record + ".json")
+	b, err := os.ReadFile(record + ".json")
 	if err != nil {
 		return err
 	}
@@ -181,7 +181,7 @@ func (d *Driver) ReadAll(collection string) ([][]byte, error) {
 
 	// read all the files in the transaction.Collection; an error here just means
 	// the collection is either empty or doesn't exist
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, err
 	}
@@ -189,7 +189,7 @@ func (d *Driver) ReadAll(collection string) ([][]byte, error) {
 	return readAll(files, dir)
 }
 
-func readAll(files []os.FileInfo, dir string) ([][]byte, error) {
+func readAll(files []fs.DirEntry, dir string) ([][]byte, error) {
 	// the files read from the database
 	var records [][]byte
 
@@ -197,7 +197,7 @@ func readAll(files []os.FileInfo, dir string) ([][]byte, error) {
 	// append the files to the collection of read
 	for _, file := range files {
 
-		b, err := ioutil.ReadFile(filepath.Join(dir, file.Name()))
+		b, err := os.ReadFile(filepath.Join(dir, file.Name()))
 
 		if err != nil {
 			return nil, err
@@ -227,7 +227,7 @@ func (d *Driver) Delete(collection, resource string) error {
 
 	// if fi is nil or error is not nil return
 	case fi == nil, err != nil:
-		return fmt.Errorf("Unable to find file or directory named %v\n", path)
+		return fmt.Errorf("unable to find file or directory named %v", path)
 
 	// remove directory and all contents
 	case fi.Mode().IsDir():
@@ -241,7 +241,6 @@ func (d *Driver) Delete(collection, resource string) error {
 	return nil
 }
 
-//
 func stat(path string) (fi os.FileInfo, err error) {
 
 	// check for dir, if path isn't a directory check to see if it's a file
