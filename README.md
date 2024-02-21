@@ -1,7 +1,7 @@
 Scribble [![GoDoc](https://godoc.org/github.com/boltdb/bolt?status.svg)](http://godoc.org/github.com/saberder/nestedScribble) [![Go Report Card](https://goreportcard.com/badge/github.com/saberder/nestedScribble)](https://goreportcard.com/report/github.com/saberder/nestedScribble)
 --------
 This fork is to make scribble handle nested folder structures.
-So you can have layoyts like bowls/{bowlname}/fish/{fishname}.json instead of the flat structure of only fish/{fishname}.json and no deeper.
+So you can have layouts like bowls/{bowlname}/fish/{fishname}.json instead of the flat structure of only fish/{fishname}.json and no deeper.
 ReadAll will still work by reading all the json files in bowls/{bowlname}/fish folder.
 
 A tiny JSON database in Golang
